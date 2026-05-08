@@ -1,67 +1,19 @@
 #!/usr/bin/env python3
-"""Generate index.html from data/photos.json — a static, prerendered photograph book."""
+"""Generate index.html — a static shell whose plates are loaded from Supabase at runtime."""
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PHOTOS = json.load(open(ROOT / "data" / "photos.json"))
 
-def roman(n: int) -> str:
-    vals = [(1000,"M"),(900,"CM"),(500,"D"),(400,"CD"),(100,"C"),(90,"XC"),
-            (50,"L"),(40,"XL"),(10,"X"),(9,"IX"),(5,"V"),(4,"IV"),(1,"I")]
-    out = ""
-    for v, s in vals:
-        while n >= v:
-            out += s; n -= v
-    return out
-
-# Layout rhythm:
-#   Every 6th plate is full-bleed for breathing room.
-#   Every 3rd plate gets an off-center inset (slightly narrower) for variety.
-def variant(idx: int, w: int | None, h: int | None) -> str:
-    if w and h and h > w:
-        return "tall"  # portrait — give it its own treatment
-    if (idx + 1) % 6 == 0:
-        return "wide"
-    if (idx + 1) % 3 == 0:
-        return "inset"
-    return "default"
-
-plates_html = []
-for i, p in enumerate(PHOTOS):
-    n = i + 1
-    v = variant(i, p.get("orig_width"), p.get("orig_height"))
-    img_path = f"images/{p['id']}.jpg"
-    w = p.get("orig_width") or 2048
-    h = p.get("orig_height") or 1365
-    plates_html.append(f"""        <figure class="plate plate--{v}" data-plate="{n}" data-id="{p['id']}">
-          <div class="plate__frame">
-            <img src="{img_path}" alt="Douze Land, plate {roman(n)}" loading="lazy" decoding="async" width="{w}" height="{h}">
-          </div>
-          <figcaption class="plate__caption">
-            <span class="plate__num">{roman(n)}</span>
-            <span class="plate__rule" aria-hidden="true"></span>
-            <span class="plate__title">Douze Land</span>
-          </figcaption>
-        </figure>""")
-plates_block = "\n".join(plates_html)
-
-# Embed photos as JSON for the lightbox script
-photos_for_js = [
-    {"id": p["id"], "src": f"images/{p['id']}.jpg", "n": i + 1, "roman": roman(i + 1)}
-    for i, p in enumerate(PHOTOS)
-]
-
-html = f"""<!doctype html>
+html = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Douze Land — Thomas Douze</title>
-<meta name="description" content="Douze Land — a photograph book by Thomas Douze. Seventy-four plates.">
+<meta name="description" content="Douze Land — a photograph book by Thomas Douze.">
 <meta property="og:title" content="Douze Land">
 <meta property="og:description" content="A photograph book by Thomas Douze.">
-<meta property="og:image" content="images/{PHOTOS[0]['id']}.jpg">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,7 +22,7 @@ html = f"""<!doctype html>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y2PKR2R0RH"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){{dataLayer.push(arguments);}}
+  function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-Y2PKR2R0RH');
 </script>
@@ -87,7 +39,7 @@ html = f"""<!doctype html>
       </h1>
       <p class="cover__author">Thomas&nbsp;Douze</p>
       <div class="cover__meta">
-        <span>Seventy-four photographs</span>
+        <span class="cover__meta-count">Photographs</span>
         <span class="cover__meta-dot" aria-hidden="true">·</span>
         <span>MMXXVI</span>
       </div>
@@ -103,16 +55,15 @@ html = f"""<!doctype html>
       <p class="preface__lede">Twelve days inside a kingdom that wasn&rsquo;t built to be looked at this way.</p>
       <p>
         <em>Douze Land</em> is a wandering through turrets and tarmac, the small
-        frames between the rides — a child mid-flight on a scooter, a face caught
-        laughing, the hours that don&rsquo;t make the postcard. Seventy-four plates,
-        held to the light.
+        frames between the rides &mdash; a child mid-flight on a scooter, a face caught
+        laughing, the hours that don&rsquo;t make the postcard. Plates held to the light.
       </p>
-      <p class="preface__sign">— T.&thinsp;D.</p>
+      <p class="preface__sign">&mdash; T.&thinsp;D.</p>
     </div>
   </section>
 
-  <main class="plates" id="plates">
-{plates_block}
+  <main class="plates" id="plates" aria-busy="true">
+    <p class="plates__loading">Loading photographs&hellip;</p>
   </main>
 
   <footer class="colophon">
@@ -120,14 +71,14 @@ html = f"""<!doctype html>
       <p class="colophon__mark">Douze Land</p>
       <p>
         Photographs and sequence by Thomas Douze.<br>
-        Seventy-four plates, made in the spring of 2026.
+        Made in the spring of 2026.
       </p>
       <p class="colophon__credit">
         Set in <em>Oswald</em> and <em>Cormorant Garamond</em>.<br>
         Originally published as a notebook at
         <a href="https://douzeland.tumblr.com" rel="noopener">douzeland.tumblr.com</a>.
       </p>
-      <p class="colophon__copy">© Thomas Douze, MMXXVI</p>
+      <p class="colophon__copy">&copy; Thomas Douze, MMXXVI</p>
     </div>
   </footer>
 
@@ -141,13 +92,10 @@ html = f"""<!doctype html>
     <button class="lightbox__nav lightbox__nav--next" aria-label="Next photograph">&rarr;</button>
   </div>
 
-  <script>
-    window.__DOUZE = {json.dumps(photos_for_js, ensure_ascii=False)};
-  </script>
-  <script src="script.js" defer></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
 """
 
 (ROOT / "index.html").write_text(html)
-print(f"Wrote index.html with {len(PHOTOS)} plates")
+print("Wrote index.html (dynamic plates)")

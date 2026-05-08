@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Douze Land — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<section class="login" id="login" hidden>
+  <div class="login__card">
+    <p class="login__brand">DOUZE LAND</p>
+    <h1 class="login__title">Admin</h1>
+    <form id="login-form" class="login__form">
+      <label>
+        <span>Email</span>
+        <input type="email" name="email" required autocomplete="username">
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" name="password" required autocomplete="current-password" minlength="6">
+      </label>
+      <button type="submit" class="btn btn--primary">Sign in</button>
+      <p class="login__error" id="login-error" hidden></p>
+    </form>
+    <p class="login__hint">
+      First time? Create your admin account in the
+      <a href="https://supabase.com/dashboard/project/sfavcvosruihezvgyjoj/auth/users" target="_blank" rel="noopener">Supabase dashboard</a>.
+    </p>
+  </div>
+</section>
+
+<!-- APP -->
+<section class="app" id="app" hidden>
+  <header class="topbar">
+    <div class="topbar__left">
+      <a class="topbar__brand" href="./" title="Open the public site">DOUZE LAND</a>
+      <span class="topbar__sep">·</span>
+      <span class="topbar__section">Admin</span>
+    </div>
+    <div class="topbar__right">
+      <span class="topbar__user" id="who"></span>
+      <button class="btn btn--ghost" id="btn-logout">Sign out</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="toolbar">
+      <div class="toolbar__group">
+        <label class="btn btn--primary" for="upload">
+          <input type="file" id="upload" accept="image/*" multiple hidden>
+          Upload photos
+        </label>
+        <button class="btn" id="btn-save-order" disabled>Save order</button>
+        <button class="btn btn--ghost" id="btn-refresh">Refresh</button>
+      </div>
+      <div class="toolbar__group toolbar__group--right">
+        <span class="toolbar__count" id="count">—</span>
+      </div>
+    </section>
+
+    <p class="hint">Drag a photo to reorder. Click the caption to edit. Saved automatically on blur.</p>
+
+    <ul class="photos" id="photos" aria-busy="true"></ul>
+
+    <p class="empty" id="empty" hidden>No photographs yet. Upload some above.</p>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+</section>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
