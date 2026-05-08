@@ -92,7 +92,9 @@ html = """<!doctype html>
     <button class="lightbox__nav lightbox__nav--next" aria-label="Next photograph">&rarr;</button>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <script src="vendor/supabase.min.js" defer></script>
+  <script src="config.js" defer></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
 """

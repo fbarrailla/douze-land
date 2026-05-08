@@ -1,9 +1,7 @@
 // Public-facing photograph book — fetches plates from Supabase, renders them,
 // then wires up scroll fade-in and the lightbox.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { SUPABASE_URL, SUPABASE_KEY, photoUrl } from "./config.js";
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const { SUPABASE_URL, SUPABASE_KEY, photoUrl } = window.DOUZE;
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ---- Roman numerals -------------------------------------------------- */
 const ROMAN = [
@@ -41,7 +39,7 @@ const numberWord = (n) => {
 
 /* ---- Render --------------------------------------------------------- */
 async function loadPhotos() {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from("photos")
     .select("id, filename, bucket, position, caption, width, height")
     .order("position", { ascending: true });

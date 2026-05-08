@@ -1,8 +1,6 @@
 // Admin panel — Supabase Auth + photo CRUD.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { SUPABASE_URL, SUPABASE_KEY, STORAGE_BUCKET, photoUrl } from "./config.js";
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+const { SUPABASE_URL, SUPABASE_KEY, STORAGE_BUCKET, photoUrl } = window.DOUZE;
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true },
 });
 
@@ -42,7 +40,7 @@ function toast(msg, kind = "") {
 
 /* ---- Auth -------------------------------------------------------- */
 async function refreshUI() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sb.auth.getSession();
   if (session) {
     els.login.hidden = true;
     els.app.hidden = false;
@@ -58,7 +56,7 @@ els.loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   els.loginError.hidden = true;
   const fd = new FormData(els.loginForm);
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error } = await sb.auth.signInWithPassword({
     email:    fd.get("email"),
     password: fd.get("password"),
   });
@@ -72,17 +70,17 @@ els.loginForm.addEventListener("submit", async (e) => {
 });
 
 els.logout.addEventListener("click", async () => {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
   refreshUI();
 });
 
-supabase.auth.onAuthStateChange((_evt, _session) => { refreshUI(); });
+sb.auth.onAuthStateChange((_evt, _session) => { refreshUI(); });
 
 /* ---- Load -------------------------------------------------------- */
 async function loadPhotos() {
   els.photos.setAttribute("aria-busy", "true");
   els.photos.innerHTML = "";
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from("photos")
     .select("id, filename, bucket, position, caption, width, height")
     .order("position", { ascending: true });
@@ -130,7 +128,7 @@ function photoCard(p, idx) {
   ta.addEventListener("blur", async () => {
     const next = ta.value.trim();
     if (next === original) return;
-    const { error } = await supabase.from("photos").update({ caption: next || null }).eq("id", p.id);
+    const { error } = await sb.from("photos").update({ caption: next || null }).eq("id", p.id);
     if (error) {
       toast("Caption save failed: " + error.message, "error");
       ta.value = original;
@@ -164,13 +162,13 @@ function escapeHtml(s) {
 async function deletePhoto(p) {
   // If stored in Supabase Storage, remove the file too
   if (p.bucket !== "legacy") {
-    const { error: stErr } = await supabase.storage.from(STORAGE_BUCKET).remove([p.filename]);
+    const { error: stErr } = await sb.storage.from(STORAGE_BUCKET).remove([p.filename]);
     if (stErr && stErr.message && !/Not found/i.test(stErr.message)) {
       toast("Storage remove failed: " + stErr.message, "error");
       return;
     }
   }
-  const { error } = await supabase.from("photos").delete().eq("id", p.id);
+  const { error } = await sb.from("photos").delete().eq("id", p.id);
   if (error) { toast("Delete failed: " + error.message, "error"); return; }
   photos = photos.filter(x => x.id !== p.id);
   // Re-number positions to keep them dense
@@ -186,7 +184,7 @@ async function renumber() {
   for (const c of changed) {
     const row = photos.find(p => p.id === c.id);
     row.position = c.position;
-    const { error } = await supabase.from("photos").update({ position: c.position }).eq("id", c.id);
+    const { error } = await sb.from("photos").update({ position: c.position }).eq("id", c.id);
     if (error) toast("Renumber failed: " + error.message, "error");
   }
 }
@@ -267,7 +265,7 @@ async function uploadOne(file) {
 
   toast(`Uploading ${file.name}…`);
 
-  const { error: upErr } = await supabase.storage
+  const { error: upErr } = await sb.storage
     .from(STORAGE_BUCKET)
     .upload(filename, file, { contentType: file.type, cacheControl: "3600", upsert: false });
   if (upErr) { toast(`Upload failed: ${upErr.message}`, "error"); return; }
@@ -276,12 +274,12 @@ async function uploadOne(file) {
   const { width, height } = await readDims(file).catch(() => ({ width: null, height: null }));
 
   const nextPos = (photos[photos.length - 1]?.position || 0) + 1;
-  const { error: insErr } = await supabase.from("photos").insert({
+  const { error: insErr } = await sb.from("photos").insert({
     filename, bucket: STORAGE_BUCKET, position: nextPos, width, height,
   });
   if (insErr) {
     toast(`Insert failed: ${insErr.message}`, "error");
-    await supabase.storage.from(STORAGE_BUCKET).remove([filename]);
+    await sb.storage.from(STORAGE_BUCKET).remove([filename]);
     return;
   }
   toast(`${file.name} uploaded`, "success");

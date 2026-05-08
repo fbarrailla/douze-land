@@ -29,7 +29,7 @@ jobs:
           python scripts/build_site.py
           mkdir -p _site
           cp index.html styles.css script.js admin.html admin.css admin.js config.js _site/
-          cp -r images _site/
+          cp -r images vendor _site/
 
       - uses: actions/configure-pages@v5
         with:
