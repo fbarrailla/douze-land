@@ -57,10 +57,10 @@ html = f"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Douze Land — Thomas Fleurie</title>
-<meta name="description" content="Douze Land — a photograph book by Thomas Fleurie. Seventy-four plates.">
+<title>Douze Land — Thomas Douze</title>
+<meta name="description" content="Douze Land — a photograph book by Thomas Douze. Seventy-four plates.">
 <meta property="og:title" content="Douze Land">
-<meta property="og:description" content="A photograph book by Thomas Fleurie.">
+<meta property="og:description" content="A photograph book by Thomas Douze.">
 <meta property="og:image" content="images/{PHOTOS[0]['id']}.jpg">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,7 +85,7 @@ html = f"""<!doctype html>
         <span class="cover__title-line">Douze</span>
         <span class="cover__title-line">Land</span>
       </h1>
-      <p class="cover__author">Thomas&nbsp;Fleurie</p>
+      <p class="cover__author">Thomas&nbsp;Douze</p>
       <div class="cover__meta">
         <span>Seventy-four photographs</span>
         <span class="cover__meta-dot" aria-hidden="true">·</span>
@@ -107,7 +107,7 @@ html = f"""<!doctype html>
         laughing, the hours that don&rsquo;t make the postcard. Seventy-four plates,
         held to the light.
       </p>
-      <p class="preface__sign">— T.&thinsp;F.</p>
+      <p class="preface__sign">— T.&thinsp;D.</p>
     </div>
   </section>
 
@@ -119,7 +119,7 @@ html = f"""<!doctype html>
     <div class="colophon__inner">
       <p class="colophon__mark">Douze Land</p>
       <p>
-        Photographs and sequence by Thomas Fleurie.<br>
+        Photographs and sequence by Thomas Douze.<br>
         Seventy-four plates, made in the spring of 2026.
       </p>
       <p class="colophon__credit">
@@ -127,7 +127,7 @@ html = f"""<!doctype html>
         Originally published as a notebook at
         <a href="https://douzeland.tumblr.com" rel="noopener">douzeland.tumblr.com</a>.
       </p>
-      <p class="colophon__copy">© Thomas Fleurie, MMXXVI</p>
+      <p class="colophon__copy">© Thomas Douze, MMXXVI</p>
     </div>
   </footer>
 
