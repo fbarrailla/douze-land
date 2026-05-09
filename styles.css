@@ -229,6 +229,162 @@ a:hover { color: var(--accent); }
   text-align: left;
 }
 
+/* ---- Social: like + comments ---------------------------------------- */
+.plate__social {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.4rem;
+  margin-left: auto;
+  padding-left: 1.5rem;
+}
+.plate__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .25rem .35rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--ink-mute);
+  font: inherit;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: .82rem;
+  letter-spacing: .12em;
+  transition: color .18s ease, transform .12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.plate__btn:hover { color: var(--ink); }
+.plate__btn:active { transform: scale(.96); }
+.plate__icon { display: block; }
+.plate__like .plate__icon { transition: transform .25s cubic-bezier(.25,1.6,.4,1), color .2s ease; }
+.plate__like.is-liked        { color: var(--accent); }
+.plate__like.is-liked:hover  { color: var(--accent); }
+.plate__like.is-liked .plate__icon { transform: scale(1.18); }
+.plate__count {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: .76rem;
+  letter-spacing: .06em;
+  min-width: .9em;
+  display: inline-block;
+}
+
+.plate__comments {
+  margin: 1.2rem var(--gutter) 0;
+  padding: 1.2rem 1.4rem;
+  background: rgba(201, 191, 168, 0.18);
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  max-width: 56rem;
+}
+.plate__comments-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .9rem;
+}
+.comment {
+  font-family: var(--serif);
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.comment--empty {
+  color: var(--ink-mute);
+  font-style: italic;
+}
+.comment__head {
+  display: flex;
+  align-items: baseline;
+  gap: .7rem;
+  margin-bottom: .15rem;
+}
+.comment__author {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: .82rem;
+  letter-spacing: .04em;
+  color: var(--ink);
+  text-transform: none;
+}
+.comment__when {
+  font-family: var(--sans);
+  font-size: .7rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.comment__body {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+.plate__comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(201, 191, 168, 0.5);
+}
+.plate__field {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: .55rem .7rem;
+  font: inherit;
+  color: var(--ink);
+  outline: none;
+  transition: border-color .15s ease, background .15s ease;
+}
+.plate__field:focus {
+  border-color: var(--ink-soft);
+  background: #fbf7ee;
+}
+.plate__field--name { font-family: var(--sans); font-size: .85rem; }
+.plate__field--body { font-family: var(--serif); font-size: 1rem; line-height: 1.5; resize: vertical; min-height: 3rem; }
+.plate__field::placeholder { color: var(--ink-mute); font-style: italic; }
+
+.plate__form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: .2rem;
+}
+.plate__form-hint {
+  font-family: var(--sans);
+  font-size: .76rem;
+  color: var(--ink-mute);
+  font-style: italic;
+}
+.plate__post {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: .8rem;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--paper);
+  border: 0;
+  padding: .55rem 1.1rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background .15s ease, transform .08s ease;
+}
+.plate__post:hover  { background: var(--accent); }
+.plate__post:active { transform: translateY(1px); }
+.plate__post:disabled { opacity: .5; cursor: not-allowed; }
+
+@media (max-width: 720px) {
+  .plate__social { gap: .9rem; padding-left: .8rem; }
+  .plate__comments { padding: 1rem 1rem; margin: .9rem var(--gutter) 0; }
+}
+
 .plate {
   margin: 0;
   width: 100%;
@@ -258,7 +414,8 @@ a:hover { color: var(--accent); }
 .plate__caption {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: .6rem 1rem;
   margin: 1.1rem 0 0;
   padding: 0 var(--gutter);
   font-family: var(--sans);
